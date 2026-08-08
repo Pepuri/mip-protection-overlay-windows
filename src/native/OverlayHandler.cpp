@@ -175,7 +175,7 @@ ProtectionCache g_cache;
 class ProtectedFileOverlay final : public IShellIconOverlayIdentifier {
 public:
     ProtectedFileOverlay() { ++g_objectCount; }
-    ~ProtectedFileOverlay() override { --g_objectCount; }
+    ~ProtectedFileOverlay() { --g_objectCount; }
 
     IFACEMETHODIMP QueryInterface(REFIID iid, void** object) override {
         if (object == nullptr) {
@@ -255,7 +255,7 @@ private:
 class ClassFactory final : public IClassFactory {
 public:
     ClassFactory() { ++g_objectCount; }
-    ~ClassFactory() override { --g_objectCount; }
+    ~ClassFactory() { --g_objectCount; }
 
     IFACEMETHODIMP QueryInterface(REFIID iid, void** object) override {
         if (object == nullptr) {
