@@ -30,10 +30,22 @@ Get-ChildItem $repoRoot -File -Recurse |
     Where-Object Name -Match '\.(pfx|p12|snk)$' |
     ForEach-Object { throw "Private key material must not be published: $($_.FullName)" }
 
+$validationScriptPath = [IO.Path]::GetFullPath($PSCommandPath)
+$textExtensions = @(
+    '.bat', '.cmd', '.cmake', '.cpp', '.cs', '.csproj', '.h', '.hpp',
+    '.json', '.md', '.props', '.ps1', '.psd1', '.psm1', '.targets',
+    '.txt', '.xml', '.yaml', '.yml'
+)
+
 $suspicious = Get-ChildItem $repoRoot -File -Recurse |
     Where-Object {
         $_.FullName -NotMatch '\\(build|artifacts|\.git)\\' -and
-        $_.FullName -ne $MyInvocation.MyCommand.Path
+        $textExtensions -contains $_.Extension.ToLowerInvariant() -and
+        -not [string]::Equals(
+            [IO.Path]::GetFullPath($_.FullName),
+            $validationScriptPath,
+            [System.StringComparison]::OrdinalIgnoreCase
+        )
     } |
     Select-String -Pattern '(?i)(client[_-]?secret\s*[:=]\s*["''][^"'']+|BEGIN PRIVATE KEY|password\s*[:=]\s*["''][^"'']+)' `
         -ErrorAction SilentlyContinue
