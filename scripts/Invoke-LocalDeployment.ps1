@@ -104,17 +104,24 @@ if ($RestartExplorer) { $arguments += '-RestartExplorer' }
 
 Write-Host 'Running the local installer without user interaction...'
 $install = Start-Process $powerShell -ArgumentList $arguments `
-    -Wait -PassThru -WindowStyle Hidden
+    -PassThru -WindowStyle Hidden
 
-if ($install.ExitCode -notin @(0, 3010)) {
-    throw "Silent installation failed. ExitCode=$($install.ExitCode)"
+# Start-Process -Wait follows the entire descendant process tree. The installer
+# starts the protection agent, which is intentionally long-running, so -Wait
+# would never return. WaitForExit waits only for the installer PowerShell process.
+$install.WaitForExit()
+$installExitCode = $install.ExitCode
+$install.Dispose()
+
+if ($installExitCode -notin @(0, 3010)) {
+    throw "Silent installation failed. ExitCode=$installExitCode"
 }
 
-if ($install.ExitCode -eq 3010) {
+if ($installExitCode -eq 3010) {
     Write-Host 'Installation completed. Sign out or restart Windows to load the Explorer extension.'
 }
 else {
     Write-Host 'Installation completed successfully.'
 }
 
-exit $install.ExitCode
+exit $installExitCode
