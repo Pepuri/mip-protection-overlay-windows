@@ -1,6 +1,8 @@
 [CmdletBinding()]
 param(
-    [string]$OutputPath = (Join-Path $PSScriptRoot '..\assets\Protected.ico')
+    [string]$OutputPath = (Join-Path $PSScriptRoot '..\assets\Protected.ico'),
+    [ValidateRange(0.35, 0.75)]
+    [double]$BadgeScale = 0.56
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,13 +19,16 @@ foreach ($size in $sizes) {
         $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
         $graphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
 
-        $margin = [Math]::Max(1, [int]($size * 0.04))
-        $diameter = [Math]::Max(2, [int]($size * 0.22))
+        # Keep the visible badge close to the size of a conventional Explorer
+        # status overlay instead of filling the complete overlay canvas.
+        $margin = [Math]::Max(1, [int][Math]::Round($size * 0.02))
+        $badgeSize = [Math]::Max(6, [int][Math]::Round($size * $BadgeScale))
+        $diameter = [Math]::Max(2, [int][Math]::Round($badgeSize * 0.22))
         $rect = [System.Drawing.RectangleF]::new(
             $margin,
-            $margin,
-            $size - (2 * $margin),
-            $size - (2 * $margin)
+            $size - $badgeSize - $margin,
+            $badgeSize,
+            $badgeSize
         )
 
         $path = [System.Drawing.Drawing2D.GraphicsPath]::new()
@@ -41,7 +46,7 @@ foreach ($size in $sizes) {
             $path.Dispose()
         }
 
-        $fontSize = [Math]::Max(5.0, $size * 0.285)
+        $fontSize = [Math]::Max(3.0, $badgeSize * 0.285)
         $font = [System.Drawing.Font]::new(
             [System.Drawing.FontFamily]::GenericSansSerif,
             [single]$fontSize,
@@ -109,4 +114,3 @@ finally {
 }
 
 Write-Host "Generated icon: $OutputPath"
-
