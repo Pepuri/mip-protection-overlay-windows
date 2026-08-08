@@ -1,0 +1,49 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build
+        shell: pwsh
+        run: .\scripts\Build.ps1 -Clean
+
+      - name: Validate
+        shell: pwsh
+        run: .\scripts\Validate-Package.ps1 -RequireBuildArtifacts
+
+      - name: Create Intune staging payload
+        shell: pwsh
+        run: .\packaging\intune\Build-IntunePackage.ps1 -SkipIntuneWin
+
+      - name: Create checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem .\artifacts -File -Recurse |
+            Where-Object FullName -NotMatch '\\IntuneStage\\' |
+            Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash)  $($_.Path.Substring($PWD.Path.Length + 1))" } |
+            Set-Content .\artifacts\SHA256SUMS.txt -Encoding UTF8
+
+      # Source-only public preview: keep CI build and validation results in the
+      # job log, but do not publish unsigned executables or deployment payloads.

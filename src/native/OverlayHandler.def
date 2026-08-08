@@ -1,0 +1,5 @@
+LIBRARY "PurviewProtectionOverlay"
+EXPORTS
+    DllCanUnloadNow PRIVATE
+    DllGetClassObject PRIVATE
+

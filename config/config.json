@@ -1,0 +1,36 @@
+{
+  "watchRoots": [
+    "%FIXED_DRIVES%"
+  ],
+  "extensions": [
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".pdf",
+    ".pfile"
+  ],
+  "excludedPaths": [
+    "%SystemDrive%\\$Recycle.Bin",
+    "%SystemDrive%\\$WINDOWS.~BT",
+    "%SystemDrive%\\$WINDOWS.~WS",
+    "%SystemDrive%\\$WinREAgent",
+    "%SystemDrive%\\Config.Msi",
+    "%SystemDrive%\\Documents and Settings",
+    "%SystemDrive%\\PerfLogs",
+    "%ProgramFiles%",
+    "%ProgramFiles(x86)%",
+    "%ProgramData%",
+    "%SystemDrive%\\Recovery",
+    "%SystemDrive%\\System Volume Information",
+    "%SystemRoot%",
+    "%USERPROFILE%\\AppData"
+  ],
+  "excludeOneDrive": true,
+  "reconciliationMinutes": 15,
+  "eventDebounceMilliseconds": 750,
+  "maxConcurrentInspections": 2,
+  "watcherBufferKilobytes": 64
+}
