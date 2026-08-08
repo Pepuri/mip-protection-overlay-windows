@@ -67,6 +67,36 @@ whether the current user has permission to decrypt the file.
 
 The Microsoft Purview Information Protection client is not required.
 
+## One-command local deployment
+
+To build, validate, stage, and silently install the project without code signing
+or Intune, run the following command from an elevated x64 Windows PowerShell
+session:
+
+```powershell
+git clone https://github.com/Pepuri/mip-protection-overlay-windows.git
+cd .\mip-protection-overlay-windows
+
+powershell.exe -NoLogo -NoProfile -NonInteractive `
+  -ExecutionPolicy Bypass `
+  -File .\scripts\Invoke-LocalDeployment.ps1
+```
+
+If the .NET 8 SDK or Visual Studio 2022 C++/CMake build components are missing,
+allow the script to install them automatically:
+
+```powershell
+powershell.exe -NoLogo -NoProfile -NonInteractive `
+  -ExecutionPolicy Bypass `
+  -File .\scripts\Invoke-LocalDeployment.ps1 `
+  -InstallBuildPrerequisites
+```
+
+The installer does not restart Explorer by default. A successful first
+installation normally returns `3010`; sign out or restart Windows to load the
+Explorer extension. See the
+[one-command local deployment guide](docs/LOCAL-DEPLOYMENT.md) for details.
+
 ## Build
 
 Run the following commands in a non-elevated PowerShell session:

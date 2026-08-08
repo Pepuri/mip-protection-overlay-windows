@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- One-command PowerShell workflow for build, validation, local staging, and
+  silent installation without code signing or Intune.
+- Optional unattended installation of the .NET 8 and Visual Studio 2022
+  C++/CMake build prerequisites.
+- Automatic download and Microsoft signature validation for the Visual C++
+  Redistributable when it is not already installed.
+
+### Changed
+
+- Build script now locates Visual Studio's bundled CMake through `vswhere` when
+  `cmake.exe` is not available on `PATH`.
+
 ## [1.0.0-preview.1] - 2026-08-08
 
 ### Added
@@ -23,4 +37,3 @@ All notable changes to this project will be documented in this file.
 - Classic Windows overlay slot availability is not guaranteed.
 - ARM64 and network drives have not been validated.
 - Preview binaries may be unsigned.
-

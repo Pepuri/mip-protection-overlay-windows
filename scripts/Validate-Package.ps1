@@ -13,7 +13,10 @@ $requiredSource = @(
     'packaging\intune\Install.ps1',
     'packaging\intune\Uninstall.ps1',
     'packaging\intune\Detect.ps1',
+    'scripts\Install-BuildPrerequisites.ps1',
+    'scripts\Invoke-LocalDeployment.ps1',
     'config\config.json',
+    'docs\LOCAL-DEPLOYMENT.md',
     'README.md',
     'LICENSE'
 )
