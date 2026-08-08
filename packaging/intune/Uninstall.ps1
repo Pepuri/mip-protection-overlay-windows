@@ -20,6 +20,13 @@ public static class DelayedDelete {
 }
 '@
 
+# Unload the native extension before deleting its DLL. Doing this after the
+# deletion attempt can schedule a newly reinstalled file for deletion at reboot.
+if ($RestartExplorer) {
+    Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
+    Start-Sleep -Seconds 2
+}
+
 Get-Process -Name PurviewProtectionAgent -ErrorAction SilentlyContinue |
     Stop-Process -Force -ErrorAction SilentlyContinue
 
@@ -58,8 +65,6 @@ if ($RemoveUserCaches) {
 }
 
 if ($RestartExplorer) {
-    Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
-    Start-Sleep -Seconds 2
     Start-Process explorer.exe
     exit 0
 }
@@ -67,4 +72,3 @@ if ($RestartExplorer) {
 Write-Host 'Purview Protection Overlay uninstalled. Sign out or restart Windows to unload the Explorer extension.'
 if ($requiresRestart) { exit 3010 }
 exit 3010
-
