@@ -2,7 +2,7 @@
 param(
     [string]$OutputPath = (Join-Path $PSScriptRoot '..\assets\Protected.ico'),
     [ValidateRange(0.35, 0.75)]
-    [double]$BadgeScale = 0.56
+    [double]$BadgeScale = 0.62
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,6 +17,8 @@ foreach ($size in $sizes) {
     try {
         $graphics.Clear([System.Drawing.Color]::Transparent)
         $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+        $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+        $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
         $graphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
 
         # Keep the visible badge close to the size of a conventional Explorer
@@ -46,21 +48,38 @@ foreach ($size in $sizes) {
             $path.Dispose()
         }
 
-        $fontSize = [Math]::Max(3.0, $badgeSize * 0.285)
+        # The earlier 28.5% text scale became difficult to read after Explorer
+        # reduced the overlay to its final display size. Keep the badge compact,
+        # but use heavier and larger lettering with a subtle contrast shadow.
+        $fontSize = [Math]::Max(3.5, $badgeSize * 0.34)
         $font = [System.Drawing.Font]::new(
-            [System.Drawing.FontFamily]::GenericSansSerif,
+            'Arial',
             [single]$fontSize,
             [System.Drawing.FontStyle]::Bold,
             [System.Drawing.GraphicsUnit]::Pixel
         )
         $white = [System.Drawing.Brushes]::White
+        $shadow = [System.Drawing.SolidBrush]::new(
+            [System.Drawing.Color]::FromArgb(110, 90, 0, 8)
+        )
         $format = [System.Drawing.StringFormat]::new()
         try {
             $format.Alignment = [System.Drawing.StringAlignment]::Center
             $format.LineAlignment = [System.Drawing.StringAlignment]::Center
+            $format.FormatFlags = [System.Drawing.StringFormatFlags]::NoWrap
+
+            $shadowOffset = [Math]::Max(0.35, $size * 0.006)
+            $shadowRect = [System.Drawing.RectangleF]::new(
+                $rect.X + $shadowOffset,
+                $rect.Y + $shadowOffset,
+                $rect.Width,
+                $rect.Height
+            )
+            $graphics.DrawString('MIP', $font, $shadow, $shadowRect, $format)
             $graphics.DrawString('MIP', $font, $white, $rect, $format)
         }
         finally {
+            $shadow.Dispose()
             $format.Dispose()
             $font.Dispose()
         }
